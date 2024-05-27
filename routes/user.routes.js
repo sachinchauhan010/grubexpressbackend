@@ -7,7 +7,7 @@ const router=Router();
 const app=express();
 
 router.route('/register').post(registerUser);
-app.use(authenticateJWT);
-router.route('/login').post(userLogin);
+// app.use(authenticateJWT);
+router.route('/login').post(authenticateJWT,userLogin);
 
 export default router;

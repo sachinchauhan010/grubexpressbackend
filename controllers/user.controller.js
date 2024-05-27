@@ -87,21 +87,21 @@ const userLogin = asyncHandler(async (req, res) => {
 //Auth using JWT
 const authenticateJWT=(req, res, next)=>{
     const token=req.cookies.token;
+    console.log(token)
     const router=express.Router();
     router.redirect
     if(token){
         jwt.verify(token, process.env.JWT_SECRET);
-
         return res.json({
             login: true,
             data: 'decode'
         });
     }else{
-        // return res.redirect(301, '/login');
-        return res.json({
-            login: false,
-            data: 'error'
-        });
+        return res.redirect('/api/user/login');
+        // return res.json({
+        //     login: false,
+        //     data: 'error'
+        // });
     }
     next();
 }
