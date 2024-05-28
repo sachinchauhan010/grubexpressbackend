@@ -3,7 +3,7 @@ import User from "../models/userSignup.model.js";
 import bcrypt from 'bcryptjs';
 import { asyncHandler } from "../utils/asyncHandler.js";
 import express from 'express';
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser =asyncHandler( async (req, res) => {
     console.log("API called");
 
     const { name, phoneno, email, password } = req.body;
@@ -45,7 +45,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 });
 
-const userLogin = asyncHandler(async (req, res) => {
+const userLogin =asyncHandler( async (req, res) => {
     const { email, password } = req.body;
     try {
 
@@ -92,20 +92,51 @@ const authenticateJWT=(req, res)=>{
     router.redirect
     if(token){
         jwt.verify(token, process.env.JWT_SECRET);
-        return res.json({
-            login: true,
-            data: 'decode'
+        return res.status(200).json({
+            success: true,
+            message: "User is Logged, In",
         });
     }else{
         // return res.redirect('/api/user/login');
-        return res.json({
-            login: false,
-            data: 'error'
+        return res.status(401).json({
+            success:false,
+            message: 'User is not Logged In'
         });
     }
+}
+
+const userLogout=async (req, res)=>{
+    const options = {
+        httpOnly: true,
+        secure: true,
+      };
+    res.clearCookie('token', options);
+    try {
+        delete req.cookies.token;
+
+        const tokenCookie=req.cookies.token;
+        console.log(tokenCookie, "&&&&&&&&&&");
+        if(!tokenCookie){
+            return res.status(200).json({
+                success:true,
+                message: "Logout Successfully",
+            })
+        }else{
+            return res.status(500).json({
+                success:false,
+                message: "Logout unsucess",
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message: error.message,
+        })
+    }
+
 }
 
 
 
 
-export { registerUser, userLogin, authenticateJWT };
+export { registerUser, userLogin, authenticateJWT, userLogout };
