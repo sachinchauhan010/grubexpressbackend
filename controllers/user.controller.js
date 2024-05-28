@@ -69,7 +69,8 @@ const userLogin = asyncHandler(async (req, res) => {
         res.cookie("token", token, {
             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             httpOnly: true,
-            secure: true,
+            secure: false,
+            sameSite: 'strict',
         });
         return res.status(200).json({
             success: true,
@@ -85,9 +86,8 @@ const userLogin = asyncHandler(async (req, res) => {
 });
 
 //Auth using JWT
-const authenticateJWT=(req, res, next)=>{
+const authenticateJWT=(req, res)=>{
     const token=req.cookies.token;
-    console.log(token)
     const router=express.Router();
     router.redirect
     if(token){
@@ -97,13 +97,12 @@ const authenticateJWT=(req, res, next)=>{
             data: 'decode'
         });
     }else{
-        return res.redirect('/api/user/login');
-        // return res.json({
-        //     login: false,
-        //     data: 'error'
-        // });
+        // return res.redirect('/api/user/login');
+        return res.json({
+            login: false,
+            data: 'error'
+        });
     }
-    next();
 }
 
 

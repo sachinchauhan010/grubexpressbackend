@@ -4,9 +4,11 @@ import cors from 'cors';
 import userrouter from './routes/user.routes.js';
 import connectDB from './db/index.js';
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
 import { authenticateJWT } from './controllers/user.controller.js';
 const app=express();
 
+dotenv.config();
 app.use(cors({
     origin:"*",
     credentials: true,
