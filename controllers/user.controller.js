@@ -5,6 +5,10 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import express from 'express';
 import mongoose from 'mongoose';
 
+
+// TODO: Bug in Production: 1. When we try to add to cart an item then it automatically delete the token and show the toast user logged out
+// TODO:                    2. On refresh token is deleted
+
 export const getUserId=(req)=>{
     const encodedToken=req.cookies.token
     if (!encodedToken) {
