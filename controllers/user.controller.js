@@ -8,10 +8,11 @@ import mongoose from 'mongoose';
 export const getUserId=(req)=>{
     const encodedToken=req.cookies.token
     if (!encodedToken) {
-       return res.status(401).json({
-         success: false,
-         message: 'Authentication token is missing',
-       });
+        return null;
+    //    return res.status(401).json({
+    //      success: false,
+    //      message: 'Authentication token is missing',
+    //    });
      }
     const decodedToken= jwt.verify(encodedToken, process.env.JWT_SECRET);
     const id=decodedToken.id;
