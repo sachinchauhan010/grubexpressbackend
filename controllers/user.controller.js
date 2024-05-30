@@ -3,8 +3,22 @@ import User from "../models/userSignup.model.js";
 import bcrypt from 'bcryptjs';
 import { asyncHandler } from "../utils/asyncHandler.js";
 import express from 'express';
+import mongoose from 'mongoose';
+
+export const getUserId=(req)=>{
+    const encodedToken=req.cookies.token
+    if (!encodedToken) {
+       return res.status(401).json({
+         success: false,
+         message: 'Authentication token is missing',
+       });
+     }
+    const decodedToken= jwt.verify(encodedToken, process.env.JWT_SECRET);
+    const id=decodedToken.id;
+    return id;
+}
+
 const registerUser =asyncHandler( async (req, res) => {
-    console.log("API called");
 
     const { name, phoneno, email, password } = req.body;
 
@@ -17,7 +31,7 @@ const registerUser =asyncHandler( async (req, res) => {
         }
 
         const existingUser = await User.findOne({ phoneno });
-        console.log(existingUser);
+        console.log(existingUser, "&&&&&&&&&&&&&&&&");
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -88,8 +102,6 @@ const userLogin =asyncHandler( async (req, res) => {
 //Auth using JWT
 const authenticateJWT=(req, res)=>{
     const token=req.cookies.token;
-    const router=express.Router();
-    router.redirect
     if(token){
         jwt.verify(token, process.env.JWT_SECRET);
         return res.status(200).json({
@@ -97,7 +109,6 @@ const authenticateJWT=(req, res)=>{
             message: "User is Logged, In",
         });
     }else{
-        // return res.redirect('/api/user/login');
         return res.status(401).json({
             success:false,
             message: 'User is not Logged In'
@@ -113,9 +124,7 @@ const userLogout=async (req, res)=>{
     res.clearCookie('token', options);
     try {
         delete req.cookies.token;
-
         const tokenCookie=req.cookies.token;
-        console.log(tokenCookie, "&&&&&&&&&&");
         if(!tokenCookie){
             return res.status(200).json({
                 success:true,
@@ -137,6 +146,31 @@ const userLogout=async (req, res)=>{
 }
 
 
+const addToCart=asyncHandler(async(req, res)=>{
+   try {
+    const {itemId}=req.body;
+     let updatedCart= await User.findOneAndUpdate({_id:getUserId(req)}, {$push:{cart:itemId}});
+     return res.status(200).json({
+        success:true,
+        message:"Item is added to cart",
+    })
+   } catch (error) {
+    console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:error.message,
+        })
+   }
+});
+
+const getUserCart= asyncHandler(async(req, res)=>{
+    const user= await User.findById(getUserId(req));
+    return res.status(200).json({
+        sucess:true,
+        message:"Item is added to cart",
+        userCart:user.cart,
+    })
+})
 
 
-export { registerUser, userLogin, authenticateJWT, userLogout };
+export { registerUser, userLogin, authenticateJWT, userLogout, addToCart, getUserCart};
