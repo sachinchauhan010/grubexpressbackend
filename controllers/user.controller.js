@@ -31,7 +31,6 @@ const registerUser =asyncHandler( async (req, res) => {
         }
 
         const existingUser = await User.findOne({ phoneno });
-        console.log(existingUser, "&&&&&&&&&&&&&&&&");
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -51,7 +50,7 @@ const registerUser =asyncHandler( async (req, res) => {
 
 
     } catch (error) {
-        console.log(error, "&&&&&&&&");
+        console.log(error);
         return res.status(500).json({
             success: false,
             message: "Server error",

@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 const restaurantSchema=new mongoose.Schema({
+    resid:{
+        type:String,
+        required:true,
+        unique:true,
+    },
     resname:{
         type:String,
         required: true,
@@ -12,14 +17,17 @@ const restaurantSchema=new mongoose.Schema({
         type:String,
         required:true,
     },
-    rescuisine:{
-        type:Array,
-        default:[],
-    },
+    rescuisine: [{
+        itemname: String,
+        itemid: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' }
+    }],
     resrating:{
         type:mongoose.Decimal128,
     },
-    resImage:{
+    resdescription:{
+        type:String,
+    },
+    resimage:{
         type:String,
         required:true,
     },
