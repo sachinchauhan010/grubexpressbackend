@@ -4,7 +4,7 @@ import { registerRestaurant, getImageRestaurant, registerItem, getRestaurant, ge
 import { upload } from "../utils/multer.js";
 const DistributorRouter=Router();
 
-DistributorRouter.route('/signup').post(distributorSignup);
+DistributorRouter.route('/register').post(distributorSignup);
 DistributorRouter.route('/login').post(distributorLogin);
 DistributorRouter.route('/auth').post(authenticateDistributorJWT);
 DistributorRouter.route('/logout').post(DistributorLogout);

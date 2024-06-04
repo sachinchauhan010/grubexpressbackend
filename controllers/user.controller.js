@@ -147,8 +147,8 @@ const userLogout=async (req, res)=>{
 
 const addToCart=asyncHandler(async(req, res)=>{
    try {
-    const {itemId}=req.body;
-     let updatedCart= await User.findOneAndUpdate({_id:getUserId(req)}, {$push:{cart:itemId}});
+    const item=req.body;
+     let updatedCart= await User.findOneAndUpdate({_id:getUserId(req)}, {$push:{cart:item}});
      return res.status(200).json({
         success:true,
         message:"Item is added to cart",
@@ -170,6 +170,7 @@ const getUserCart= asyncHandler(async(req, res)=>{
         userCart:user.cart,
     })
 })
+
 
 
 export { registerUser, userLogin, authenticateJWT, userLogout, addToCart, getUserCart};

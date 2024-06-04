@@ -149,6 +149,8 @@ const getRestaurant = async (req, res) => {
     }
 };
 const getRestaurantWithItems = async (req, res) => {
+
+    //TODO: retrive resid from params
     const {resid}=req.body;
     try {
         const restaurant = await Restaurant.findOne({ resid: resid }).populate('rescuisine.itemid');
@@ -170,6 +172,7 @@ const getRestaurantWithItems = async (req, res) => {
         });
     }
 };
+
 
 
 
