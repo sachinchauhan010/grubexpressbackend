@@ -5,13 +5,18 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import express from 'express';
 import mongoose from 'mongoose';
 
+
+// TODO: Bug in Production: 1. When we try to add to cart an item then it automatically delete the token and show the toast user logged out
+// TODO:                    2. On refresh token is deleted
+
 export const getUserId=(req)=>{
     const encodedToken=req.cookies.token
     if (!encodedToken) {
-       return res.status(401).json({
-         success: false,
-         message: 'Authentication token is missing',
-       });
+        return null;
+    //    return res.status(401).json({
+    //      success: false,
+    //      message: 'Authentication token is missing',
+    //    });
      }
     const decodedToken= jwt.verify(encodedToken, process.env.JWT_SECRET);
     const id=decodedToken.id;
@@ -89,7 +94,7 @@ const userLogin =asyncHandler( async (req, res) => {
         res.cookie("token", token, {
             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === 'production' || false,
             sameSite: 'strict',
         });
         return res.status(200).json({
