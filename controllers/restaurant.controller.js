@@ -58,16 +58,6 @@ const registerRestaurant = async (req, res) => {
     }
 }
 
-const getImageRestaurant = async (req, res) => {
-    const { resname } = req.body;
-    const restaurant = await Restaurant.findOne({ resname });
-    if (!restaurant) {
-        console.log("Error in finding res");
-        return res.status(404).json({ error: "Restaurant not found" });
-    }
-    return res.json({ resImage: restaurant.resImage });
-};
-
 const registerItem = async (req, res) => {
     const { itemname, itemdescription, itemprice, iteminstock } = req.body;
     const itemImageLocalPath = req.file ? req.file.path : null;
@@ -104,8 +94,9 @@ const registerItem = async (req, res) => {
                 message: "Restaurant dish Data is not saved to Database",
             })
         }
-        // TODO: make resid generalize
-        let updatecuisines = await Restaurant.findOneAndUpdate({ resid: 'IND259' }, { $push: { rescuisine: { itemname: itemname, itemid: savedItem._id } } },{ new: true });
+        
+        const {resId}=req.params;
+        let updatecuisines = await Restaurant.findOneAndUpdate({ resid: resId }, { $push: { rescuisine: { itemname: itemname, itemid: savedItem._id } } },{ new: true });
         if (updatecuisines) {
             return res.status(200).json({
                 success: true,
@@ -150,10 +141,9 @@ const getRestaurant = async (req, res) => {
 };
 const getRestaurantWithItems = async (req, res) => {
 
-    //TODO: retrive resid from params
-    const {resid}=req.body;
+    const {resId}=req.params;
     try {
-        const restaurant = await Restaurant.findOne({ resid: resid }).populate('rescuisine.itemid');
+        const restaurant = await Restaurant.findOne({ resid: resId }).populate('rescuisine.itemid');
         if (!restaurant) {
             return res.status(404).json({
                 success: false,
@@ -177,4 +167,4 @@ const getRestaurantWithItems = async (req, res) => {
 
 
 
-export { registerRestaurant, getImageRestaurant, registerItem, getRestaurant,getRestaurantWithItems };
+export { registerRestaurant, registerItem, getRestaurant,getRestaurantWithItems };
