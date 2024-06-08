@@ -17,6 +17,8 @@ const restaurantSchema=new mongoose.Schema({
         type:String,
         required:true,
     },
+
+    // TODO: modified rescuisine field
     rescuisine: [{
         itemname: String,
         itemid: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' }

@@ -1,13 +1,14 @@
 import Distributor from '../models/distributor.model.js'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
-const distributorSignup=async(req, res)=>{
-    const {name, phoneno, email, password, adharno}=req.body;
 
+
+const distributorSignup = async (req, res) => {
+    const { name, phoneno, email, password, adharno } = req.body;
     try {
-        if(!name || !phoneno || !email || !password || !adharno ){
+        if (!name || !phoneno || !email || !password || !adharno) {
             return res.status(400).json({
-                success:false,
+                success: false,
                 message: `${!name ? "Name" : !phoneno ? "Contact Number" : !email ? "Email" : !password ? "Password" : "Aadhar Number"} is required`,
             });
         }
@@ -29,9 +30,9 @@ const distributorSignup=async(req, res)=>{
             success: true,
             message: "Distributor registered Succesfully",
         })
-        
+
     } catch (error) {
-        console.log("Error in Sign up Distributor",error);
+        console.log("Error in Sign up Distributor", error);
         return res.status(500).json({
             success: false,
             message: "Server error",
@@ -39,7 +40,7 @@ const distributorSignup=async(req, res)=>{
     }
 };
 
-const distributorLogin= async (req, res)=>{
+const distributorLogin = async (req, res) => {
     const { email, password } = req.body;
     try {
 
@@ -79,49 +80,49 @@ const distributorLogin= async (req, res)=>{
     }
 }
 
-const authenticateDistributorJWT=(req, res)=>{
-    const token=req.cookies.distributorToken;
-    if(token){
+const authenticateDistributorJWT = (req, res) => {
+    const token = req.cookies.distributorToken;
+    if (token) {
         jwt.verify(token, process.env.JWT_SECRET);
         return res.status(200).json({
             success: true,
-            message: "Distributor is Logged, In",
+            message: "Distributor is Logged In",
         });
-    }else{
+    } else {
         return res.status(401).json({
-            success:false,
+            success: false,
             message: 'Distributor is not Logged In'
         });
     }
 }
 
-const DistributorLogout=async (req, res)=>{
+const DistributorLogout = async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-      };
+    };
     res.clearCookie('distributorToken', options);
     try {
         delete req.cookies.distributorToken;
-        const DistributorCookie=req.cookies.distributorToken;
-        if(!DistributorCookie){
+        const DistributorCookie = req.cookies.distributorToken;
+        if (!DistributorCookie) {
             return res.status(200).json({
-                success:true,
+                success: true,
                 message: "Logout Successfully",
             })
-        }else{
+        } else {
             return res.status(500).json({
-                success:false,
+                success: false,
                 message: "Logout unsucess",
             })
         }
     } catch (error) {
         return res.status(500).json({
-            success:false,
+            success: false,
             message: error.message,
         })
     }
 
 }
 
-export {distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout};
+export { distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout };

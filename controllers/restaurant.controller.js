@@ -1,8 +1,26 @@
 import Restaurant from "../models/restaurant.model.js";
 import { Item } from "../models/restaurantItem.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-const registerRestaurant = async (req, res) => {
+import Distributor from '../models/distributor.model.js'
+import jwt from "jsonwebtoken";
 
+const getDistributorId = (req) => {
+    if (!req.cookies || !req.cookies.distributorToken) {
+        return null;
+    }
+    try {
+        const encodedDistributorToken = req.cookies.distributorToken;
+        const decodedDistributorToken = jwt.verify(encodedDistributorToken, process.env.JWT_SECRET);
+        const distributorId = decodedDistributorToken.id;
+        return distributorId;
+    } catch (error) {
+        console.error("Error decoding distributor token:", error.message);
+        return null;
+    }
+}
+
+const registerRestaurant = async (req, res) => {
+    console.log(req.cookies, "Cont")
     const { resid, resname, reslocation, resdescription, restype, resowner, resopentime, resclosetime, rescuisine } = req.body;
 
     const resImageLocalPath = req.file ? req.file.path : null;
@@ -37,14 +55,25 @@ const registerRestaurant = async (req, res) => {
                 message: "File is not uploaded on Cloudinary",
             })
         }
-        const newRestaurant = new Restaurant({ resid, resname, reslocation,resdescription, restype, resowner, rescuisine, resopentime, resclosetime, resimage: uploadResImageResponse.url });
-        const saveToDB = await newRestaurant.save();
-        if (!saveToDB) {
+
+        const isDisdtributorLoggedIn = getDistributorId(req);
+        if (isDisdtributorLoggedIn) {
+            const newRestaurant = new Restaurant({ resid, resname, reslocation, resdescription, restype, resowner, rescuisine, resopentime, resclosetime, resimage: uploadResImageResponse.url });
+            const saveToDB = await newRestaurant.save();
+            const upadateDistributor = await Distributor.findOneAndUpdate({ _id: isDisdtributorLoggedIn }, { $push: { restaurant: resid } }, { new: true });
+            if (!saveToDB) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Restaurant Data is not saved to Database",
+                })
+            }
+        } else {
             return res.status(500).json({
                 success: false,
-                message: "Restaurant Data is not saved to Database",
+                message: "You are not logged In",
             })
         }
+
         return res.status(200).json({
             success: true,
             message: "Restaurant registered Succesfully",
@@ -94,9 +123,9 @@ const registerItem = async (req, res) => {
                 message: "Restaurant dish Data is not saved to Database",
             })
         }
-        
-        const {resId}=req.params;
-        let updatecuisines = await Restaurant.findOneAndUpdate({ resid: resId }, { $push: { rescuisine: { itemname: itemname, itemid: savedItem._id } } },{ new: true });
+
+        const { resId } = req.params;
+        let updatecuisines = await Restaurant.findOneAndUpdate({ resid: resId }, { $push: { rescuisine: { itemname: itemname, itemid: savedItem._id } } }, { new: true });
         if (updatecuisines) {
             return res.status(200).json({
                 success: true,
@@ -140,8 +169,7 @@ const getRestaurant = async (req, res) => {
     }
 };
 const getRestaurantWithItems = async (req, res) => {
-
-    const {resId}=req.params;
+    const { resId } = req.params;
     try {
         const restaurant = await Restaurant.findOne({ resid: resId }).populate('rescuisine.itemid');
         if (!restaurant) {
@@ -164,7 +192,34 @@ const getRestaurantWithItems = async (req, res) => {
 };
 
 
+const getRegisteredRestaurant = async (req, res) => {
+    try {
+        const distributorUser = await Distributor.findOne({ _id: getDistributorId(req) })
+        const { restaurant } = distributorUser;
+        const registeredRes = restaurant;
 
+        const resDetails = []
+        for (let i = 0; i < registeredRes.length; i++) {
+            const res = await getRegRes(registeredRes[i]);
+            resDetails.push( res );
+        }
 
+        if (resDetails.length >= 0) {
+            return res.json(resDetails)
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error in finding the restaurant"
+        })
+    }
+}
 
-export { registerRestaurant, registerItem, getRestaurant,getRestaurantWithItems };
+const getRegRes = async (resId) => {
+    const Res = await Restaurant.findOne({ resid: resId });
+    return Res;
+}
+
+export { registerRestaurant, registerItem, getRestaurant, getRestaurantWithItems, getRegisteredRestaurant };

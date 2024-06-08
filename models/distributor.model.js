@@ -24,7 +24,7 @@ const distributorSchema= new mongoose.Schema({
         required:true,
         unique:true,
     },
-    restaurnat:{
+    restaurant:{
         type:Array,
         default:[],
     }
