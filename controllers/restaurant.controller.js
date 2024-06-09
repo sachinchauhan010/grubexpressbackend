@@ -20,8 +20,7 @@ const getDistributorId = (req) => {
 }
 
 const registerRestaurant = async (req, res) => {
-    console.log(req.cookies, "Cont")
-    const { resid, resname, reslocation, resdescription, restype, resowner, resopentime, resclosetime, rescuisine } = req.body;
+    const { resid, resname, reslocation, resdescription, restype, resowner, resopentime, resclosetime, rescuisine={} } = req.body;
 
     const resImageLocalPath = req.file ? req.file.path : null;
 
@@ -58,7 +57,7 @@ const registerRestaurant = async (req, res) => {
 
         const isDisdtributorLoggedIn = getDistributorId(req);
         if (isDisdtributorLoggedIn) {
-            const newRestaurant = new Restaurant({ resid, resname, reslocation, resdescription, restype, resowner, rescuisine, resopentime, resclosetime, resimage: uploadResImageResponse.url });
+            const newRestaurant = new Restaurant({ resid, resname, reslocation, resdescription, restype, resowner, rescuisine:{}, resopentime, resclosetime, resimage: uploadResImageResponse.url });
             const saveToDB = await newRestaurant.save();
             const upadateDistributor = await Distributor.findOneAndUpdate({ _id: isDisdtributorLoggedIn }, { $push: { restaurant: resid } }, { new: true });
             if (!saveToDB) {
