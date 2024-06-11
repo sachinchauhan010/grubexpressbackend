@@ -15,5 +15,5 @@ DistributorRouter.route('/get-restaurant-dish/:resId').post(getRestaurantWithIte
 
 // DistributorRouter.route('/get-res-info').post(getImageRestaurant);
 DistributorRouter.route('/register-restaurant').post( upload.single('resimage'),registerRestaurant);
-DistributorRouter.route('/register-restaurant-dish').post( upload.single('itemphoto'),registerItem);
+DistributorRouter.route('/register-restaurant-dish/:resId').post( upload.single('itemimage'),registerItem);
 export default DistributorRouter;

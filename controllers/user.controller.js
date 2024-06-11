@@ -9,18 +9,17 @@ import mongoose from 'mongoose';
 // TODO: Bug in Production: 1. When we try to add to cart an item then it automatically delete the token and show the toast user logged out
 // TODO:                    2. On refresh token is deleted
 
-export const getUserId=(req)=>{
-    const encodedToken=req.cookies.token
-    console.log(req.cookies, "&&&")
+export const getUserId = (req) => {
+    const encodedToken = req.cookies.token
     if (!encodedToken) {
         return null;
-     }
-    const decodedToken= jwt.verify(encodedToken, process.env.JWT_SECRET);
-    const id=decodedToken.id;
+    }
+    const decodedToken = jwt.verify(encodedToken, process.env.JWT_SECRET);
+    const id = decodedToken.id;
     return id;
 }
 
-const registerUser =asyncHandler( async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
 
     const { name, phoneno, email, password } = req.body;
 
@@ -67,7 +66,7 @@ const registerUser =asyncHandler( async (req, res) => {
     }
 });
 
-const userLogin =asyncHandler( async (req, res) => {
+const userLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     try {
 
@@ -108,45 +107,45 @@ const userLogin =asyncHandler( async (req, res) => {
 });
 
 //Auth using JWT
-const authenticateJWT=(req, res)=>{
-    const token=req.cookies.token;
-    if(token){
+const authenticateJWT = (req, res) => {
+    const token = req.cookies.token;
+    if (token) {
         jwt.verify(token, process.env.JWT_SECRET);
         return res.status(200).json({
             success: true,
             message: "User is Logged, In",
         });
-    }else{
+    } else {
         return res.status(401).json({
-            success:false,
+            success: false,
             message: 'User is not Logged In'
         });
     }
 }
 
-const userLogout=async (req, res)=>{
+const userLogout = async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-      };
+    };
     res.clearCookie('token', options);
     try {
         delete req.cookies.token;
-        const tokenCookie=req.cookies.token;
-        if(!tokenCookie){
+        const tokenCookie = req.cookies.token;
+        if (!tokenCookie) {
             return res.status(200).json({
-                success:true,
+                success: true,
                 message: "Logout Successfully",
             })
-        }else{
+        } else {
             return res.status(500).json({
-                success:false,
+                success: false,
                 message: "Logout unsucess",
             })
         }
     } catch (error) {
         return res.status(500).json({
-            success:false,
+            success: false,
             message: error.message,
         })
     }
@@ -154,32 +153,42 @@ const userLogout=async (req, res)=>{
 }
 
 
-const addToCart=asyncHandler(async(req, res)=>{
-   try {
-    const item=req.body;
-     let updatedCart= await User.findOneAndUpdate({_id:getUserId(req)}, {$push:{cart:item}});
-     return res.status(200).json({
-        success:true,
-        message:"Item is added to cart",
-    })
-   } catch (error) {
-    console.log(error);
-        return res.status(500).json({
-            success:false,
-            message:error.message,
+const addToCart = asyncHandler(async (req, res) => {
+    try {
+        const item = req.body;
+        let updatedCart = await User.findOneAndUpdate({ _id: getUserId(req) }, { $push: { cart: item } });
+        return res.status(200).json({
+            success: true,
+            message: "Item is added to cart",
         })
-   }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
 });
 
-const getUserCart= asyncHandler(async(req, res)=>{
-    const user= await User.findById(getUserId(req));
-    return res.status(200).json({
-        sucess:true,
-        message:"Item is added to cart",
-        userCart:user.cart,
-    })
+
+const getUserCart = asyncHandler(async (req, res) => {
+    const isUserLoggedin= getUserId(req)
+    if (isUserLoggedin!=null) {
+        const user = await User.findById(getUserId(req));
+        return res.status(200).json({
+            success: true,
+            message: "Item is added to cart",
+            userCart: user.cart,
+        })
+    }else{
+        return res.status(500).json({
+            sucess: false,
+            message: "You are logged out",
+            userCart: []
+        })
+    }
 })
 
 
 
-export { registerUser, userLogin, authenticateJWT, userLogout, addToCart, getUserCart};
+export { registerUser, userLogin, authenticateJWT, userLogout, addToCart, getUserCart };

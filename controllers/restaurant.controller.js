@@ -1,5 +1,5 @@
 import Restaurant from "../models/restaurant.model.js";
-import { Item } from "../models/restaurantItem.model.js";
+import { Item } from "../models/restaurant.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import Distributor from '../models/distributor.model.js'
 import jwt from "jsonwebtoken";
@@ -87,15 +87,15 @@ const registerRestaurant = async (req, res) => {
 }
 
 const registerItem = async (req, res) => {
-    const { itemname, itemdescription, itemprice, iteminstock } = req.body;
+    const { itemname, itemdescription, itemprice} = req.body;
     const itemImageLocalPath = req.file ? req.file.path : null;
 
     try {
 
-        if (!itemname || !itemprice || !iteminstock) {
+        if (!itemname || !itemprice) {
             return res.status(400).json({
                 success: false,
-                message: `${!itemname ? "Item Name" : !itemprice ? "Item Price" : "Item in Stock"}, is required`,
+                message: `${!itemname ? "Item Name" :  "Item Price"}, is required`,
             });
         }
 
@@ -114,7 +114,7 @@ const registerItem = async (req, res) => {
             })
         }
 
-        const newItem = new Item({ itemname, itemphoto: itemResponse.url, itemdescription, itemprice, iteminstock });
+        const newItem = new Item({ itemname, itemimage: itemResponse.url, itemdescription, itemprice});
         const savedItem = await newItem.save();
         if (!savedItem) {
             return res.status(500).json({
@@ -122,9 +122,8 @@ const registerItem = async (req, res) => {
                 message: "Restaurant dish Data is not saved to Database",
             })
         }
-
         const { resId } = req.params;
-        let updatecuisines = await Restaurant.findOneAndUpdate({ resid: resId }, { $push: { rescuisine: { itemname: itemname, itemid: savedItem._id } } }, { new: true });
+        let updatecuisines = await Restaurant.findOneAndUpdate({ resid: resId }, { $push: { rescuisine: newItem } }, { new: true });
         if (updatecuisines) {
             return res.status(200).json({
                 success: true,
@@ -168,9 +167,11 @@ const getRestaurant = async (req, res) => {
     }
 };
 const getRestaurantWithItems = async (req, res) => {
+    
     const { resId } = req.params;
+    console.log(resId, 'resId')
     try {
-        const restaurant = await Restaurant.findOne({ resid: resId }).populate('rescuisine.itemid');
+        const restaurant = await Restaurant.findOne({ resid: resId });
         if (!restaurant) {
             return res.status(404).json({
                 success: false,
@@ -179,7 +180,7 @@ const getRestaurantWithItems = async (req, res) => {
         }
         return res.status(200).json({
             success: true,
-            data: restaurant
+            dish: restaurant
         });
     } catch (error) {
         console.log("Error retrieving restaurant with items", error.message);
@@ -203,7 +204,7 @@ const getRegisteredRestaurant = async (req, res) => {
             resDetails.push( res );
         }
 
-        if (resDetails.length >= 0) {
+        if (resDetails.length > 0) {
             return res.json(resDetails)
         } else {
             return 0;

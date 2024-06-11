@@ -1,4 +1,31 @@
 import mongoose from "mongoose";
+const ItemSchema=new mongoose.Schema({
+    itemname:{
+        type:String,
+        required: true,
+        unique:true,
+    },
+
+    itemimage:{
+        type:String,
+        required:true,
+    },
+    
+    itemdescription:{
+        type:String,
+    },
+
+    itemprice:{
+        type:Number,
+        required:true,
+    },
+
+    iteminstock:{
+        type:String,
+    }
+
+});
+
 const restaurantSchema=new mongoose.Schema({
     resid:{
         type:String,
@@ -19,10 +46,7 @@ const restaurantSchema=new mongoose.Schema({
     },
 
     // TODO: modified rescuisine field
-    rescuisine: [{
-        itemname: String,
-        itemid: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' }
-    }],
+    rescuisine: [ItemSchema],
     resrating:{
         type:mongoose.Decimal128,
     },
@@ -48,5 +72,5 @@ const restaurantSchema=new mongoose.Schema({
 });
 
 const Restaurant= mongoose.model('Restaurant', restaurantSchema);
-
+export const Item= mongoose.model('Item', ItemSchema);
 export default Restaurant;
