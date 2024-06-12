@@ -64,8 +64,7 @@ const distributorLogin = async (req, res) => {
         res.cookie("distributorToken", distributorToken, {
             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             httpOnly: true,
-            secure: false,
-            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production' || false,
         });
         return res.status(200).json({
             success: true,
