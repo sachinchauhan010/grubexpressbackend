@@ -125,4 +125,11 @@ const DistributorLogout = async (req, res) => {
 
 }
 
-export { distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout };
+const getToken= async (req, res)=>{
+    const userTypeToken= req.cookies
+    if(userTypeToken){
+        res.send(userTypeToken)
+    }
+}
+
+export { distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout, getToken};

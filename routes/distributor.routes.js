@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout } from "../controllers/destributor.controller.js";
+import { distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout, getToken } from "../controllers/destributor.controller.js";
 import { registerRestaurant, registerItem, getRestaurant, getRestaurantWithItems, getRegisteredRestaurant } from "../controllers/restaurant.controller.js";
 import { upload } from "../utils/multer.js";
 const DistributorRouter=Router();
@@ -8,6 +8,7 @@ DistributorRouter.route('/register').post(distributorSignup);
 DistributorRouter.route('/login').post(distributorLogin);
 DistributorRouter.route('/auth').post(authenticateDistributorJWT);
 DistributorRouter.route('/logout').post(DistributorLogout);
+DistributorRouter.route('/get-user-type-token').post(getToken);
 DistributorRouter.route('/get-restaurant').post(getRestaurant);
 DistributorRouter.route('/get-registered-restaurant').post(getRegisteredRestaurant);
 DistributorRouter.route('/get-restaurant-dish/:resId').post(getRestaurantWithItems);
