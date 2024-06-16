@@ -46,7 +46,9 @@ const restaurantSchema=new mongoose.Schema({
     },
 
     // TODO: modified rescuisine field
-    rescuisine: [ItemSchema],
+    rescuisine:{
+        type: Array
+    },
     resrating:{
         type:mongoose.Decimal128,
     },
