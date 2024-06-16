@@ -62,9 +62,10 @@ const distributorLogin = async (req, res) => {
         }
         const distributorToken = jwt.sign({ id: isExistDistributorUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.cookie("distributorToken", distributorToken, {
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production' || false,
+          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          // sameSite: 'true',
         });
         return res.status(200).json({
             success: true,
