@@ -22,7 +22,12 @@ const userSchema = new mongoose.Schema({
     cart: {
         type: Array,
         default: [{}],
+    },
+    order: {
+        type: Array,
+        default: [{}],
     }
+
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
