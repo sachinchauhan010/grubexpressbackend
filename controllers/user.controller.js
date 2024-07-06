@@ -204,7 +204,7 @@ const getUserCart = asyncHandler(async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Item is added to cart",
-      userCart: user.cart,
+      userCart: user.cart || [],
     })
   } else {
     return res.status(500).json({
