@@ -1,7 +1,7 @@
 import Distributor from '../models/distributor.model.js'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
-
+import Restaurant from '../models/restaurant.model.js'
 const distributorSignup = async (req, res) => {
   const { name, phoneno, email, password, adharno } = req.body;
   try {
@@ -130,4 +130,37 @@ const getToken = async (req, res) => {
   }
 }
 
-export { distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout, getToken };
+const editRestaurant = async (req, res) => {
+  const { newresid, newresname, newreslocation, newrestype, newresopentime, newresclosetime, newresowner, newresdescription } = req.body
+  console.log(req.body, "########")
+  try {
+    
+ 
+  const updateData = await Restaurant.findOneAndUpdate({ resid: newresid }, {
+    resname: newresname,
+    reslocation: newreslocation,
+    restype: newrestype,
+    resowner: newresowner,
+    resopentime: newresopentime,
+    resclosetime: newresclosetime,
+    resdescription: newresdescription
+  })
+
+  if(updateData){
+    return res.status(200).json({
+      success: true,
+      message: "Restaurant Updated Successfully",
+    })
+  }else{
+    return res.status(500).json({
+      success: false,
+      message: "Restaurant Details are not updated",
+    })
+  }
+} catch (error) {
+    console.log("Error in Edit the Details", error.message)
+}
+
+}
+
+export { distributorSignup, distributorLogin, authenticateDistributorJWT, DistributorLogout, getToken, editRestaurant };
