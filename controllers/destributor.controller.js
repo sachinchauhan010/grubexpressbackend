@@ -135,7 +135,7 @@ const editRestaurant = async (req, res) => {
   console.log(req.body, "########")
   try {
     
- 
+
   const updateData = await Restaurant.findOneAndUpdate({ resid: newresid }, {
     resname: newresname,
     reslocation: newreslocation,
