@@ -26,7 +26,6 @@ const distributorSchema= new mongoose.Schema({
     },
     restaurant:{
         type:Array,
-        default:[],
     }
 });
 
